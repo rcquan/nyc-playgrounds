@@ -47,9 +47,14 @@ discretize <- function(num) {
 }
 
 ##################################
+## Directories
+##################################
+dir.create("data") # input
+dir.create("plots") # output
+dir.create("charts") # output
+##################################
 ## Download Source Data
 ##################################
-dir.create("data")
 download.file("http://catalog.opendata.city/dataset/dd98ccda-d996-4080-87aa-ef8e4fd1f167/resource/9dd0cf1e-1513-43bc-aeda-00ceef520f2f/download/CSVMedianHouseholdIncomeCensusTract.CSV",
               "data/CSVMedianHouseholdIncomeCensusTract.CSV")
 download.file("http://www.nyc.gov/html/dcp/download/census/nyc2010census_tabulation_equiv.xlsx",
@@ -140,6 +145,8 @@ ntaGeom <- merge(ntaGeom, ntaData, by.x="id", by.y="NTACode")
 ##################################    
 ## Plotting (MAPS)
 ##################################
+
+## remove extraneous plot decorations
 blank_theme <- theme(panel.background=element_blank(),
                      legend.position=c(0.20, 0.75),
                      legend.background=element_rect(colour="black"),
@@ -153,6 +160,7 @@ blank_theme <- theme(panel.background=element_blank(),
                      panel.border = element_blank())
 
 ## Playgrounds Per 1K Residents, Continuous Scale
+png("plots/nta_playgroundsPer1KResidents.png")
 ggplot() +
     geom_map(data=ntaData, aes(map_id=NTACode, fill=playgroundsPer1KResidents), map=ntaGeom) +
     geom_path(data=ntaGeom, aes(x=long, y=lat, group=group), colour="black", size=0.25) +
@@ -160,8 +168,10 @@ ggplot() +
     scale_fill_gradientn(name="Playgrounds per\n1K Residents", 
                          colours=brewer.pal(9, "Greens")) +
     blank_theme
+dev.off()
 
 ## Playgrounds Per 1K Children, Continuous Scale
+png("plots/nta_playgroundsPer1KChildren_cont.png")
 ggplot() +
     geom_map(data=ntaData, aes(map_id=NTACode, fill=playgroundsPer1KChildren), map=ntaGeom) +
     geom_path(data=ntaGeom, aes(x=long, y=lat, group=group), colour="black", size=0.25) +
@@ -169,21 +179,24 @@ ggplot() +
     scale_fill_gradientn(name="Playgrounds per\n1K Children,\nAges 3-11", 
                          colours=brewer.pal(9, "Greens")) +
     blank_theme
-
+dev.off()
 
 ## Playgrounds Per 1K Children, Discrete Scale
 cols <- c(brewer.pal(5, "Greens"), "grey50")
 names(cols) <- c("0.0 - 0.5", "0.5 - 1.0", "1.0 - 1.5", 
                  "1.5 - 2.0", "2.0 or greater", "Park")
 
+png("plots/nta_playgroundsPer1KChildren_discr.png")
 ggplot() +
     geom_map(data=ntaData, aes(map_id=NTACode, fill=discretePlaygrounds), map=ntaGeom) +
     geom_path(data=ntaGeom, aes(x=long, y=lat, group=group), colour="black", size=0.25) +
     coord_map(projection="mercator") + 
     scale_fill_manual(name="Playgrounds per\n1K Children, Ages 3-11", values=cols) +
     blank_theme
+dev.off()
 
 ## Total Children Population
+png("plots/nta_totalChildren.png")
 ggplot() +
     geom_map(data=ntaData, aes(map_id=NTACode, fill=totalChildren), map=ntaGeom) +
     geom_path(data=ntaGeom, aes(x=long, y=lat, group=group), colour="black", size=0.25) +
@@ -191,14 +204,17 @@ ggplot() +
     scale_fill_gradientn(name="Est. Population of\nChildren, Ages 3-11",
                          colours=brewer.pal(9, "Blues")) +
     blank_theme
+dev.off()
 
 ## Median Household Income
+png("plots/nta_MHI.png")
 ggplot() +
     geom_map(data=ntaData, aes(map_id=NTACode, fill=ntaMHI), map=ntaGeom) +
     geom_path(data=ntaGeom, aes(x=long, y=lat, group=group), colour="black", size=0.25) +
     coord_map(projection="mercator") + 
     scale_fill_gradientn(name="Median Household\nIncome, Dollars", colours=brewer.pal(9, "Blues")) +
     blank_theme
+dev.off()
 
 ##################################    
 ## Plotting (TABLES)
@@ -234,29 +250,36 @@ ntaData %>%
 ##################################
 
 ## Children vs. Playgrounds
+png("charts/nta_totalChildren_playgrounds.png")
 ggplot(ntaData, aes(totalChildren, playgrounds)) +
     geom_point(size=3, alpha=0.75) +
     ylab("Playgrounds per 1K Children") +
     xlab("Population of Children, Ages 3-11") +
     theme_bw()
+dev.off()
 
 ## MHI versus Playgrounds
+png("charts/nta_MHI_playgroundsPer1KChildren.png")
 ggplot(ntaData, aes(ntaMHI, playgroundsPer1KChildren)) +
     geom_point() +
     ylim(0, 5) + ylab("Playgrounds per 1K Children") +
     xlim(0, 175000) + xlab("Median Household Income") +
     theme_bw()
+dev.off()
 
 ntaData %>%
     group_by(BoroName) %>%
     summarize(cor = cor(ntaMHI, playgroundsPer1KChildren, use="complete.obs"))
 
 ## Children versus MHI
+png("charts/nta_MHI_totalChildren.png")
 ggplot(ntaData, aes(ntaMHI, totalChildren)) +
     geom_point() +
     theme_bw()
+dev.off()
 
 ## Most Playgrounds
+png("charts/nta_mostPlaygrounds.png")
 ggplot(mostPlaygrounds, aes(reorder(NTAName, playgroundsPer1KChildren), 
                             playgroundsPer1KChildren)) + 
     geom_point(stat = "identity", size=3) + 
@@ -265,8 +288,10 @@ ggplot(mostPlaygrounds, aes(reorder(NTAName, playgroundsPer1KChildren),
     ylim(0, 6) +
     coord_flip() +
     theme_bw()
+dev.off()
 
 ## Least Playgrounds
+png("charts/nta_leastPlaygrounds.png")
 ggplot(leastPlaygrounds, aes(reorder(NTAName, -playgroundsPer1KChildren),
                              playgroundsPer1KChildren)) + 
     geom_point(stat = "identity", size=3) + 
@@ -275,3 +300,4 @@ ggplot(leastPlaygrounds, aes(reorder(NTAName, -playgroundsPer1KChildren),
     ylim(0, 6) +
     coord_flip() +
     theme_bw()
+dev.off()
