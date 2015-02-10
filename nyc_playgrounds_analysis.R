@@ -101,6 +101,8 @@ playgroundsSP <- SpatialPointsDataFrame(coords=playgrounds[, c("lon", "lat")],
                                         proj4string=proj4string)
 
 ## Spatial Join
+nta <- readOGR("data/nynta_14d/", layer="nynta")
+nta <- spTransform(nta, proj4string)
 ntaPlaygrounds <- playgroundsSP %>%
     over(nta) %>%
     group_by(NTACode) %>%
@@ -130,8 +132,6 @@ ntaData$discreteResidents <- sapply(ntaData$playgroundsPer1KResidents, discretiz
 ##################################    
 ## GIS
 ##################################
-nta <- readOGR("data/nynta_14d/", layer="nynta")
-nta <- spTransform(nta, proj4string)
 ## turn spatial data into data.frame for plotting
 ntaGeom <- fortify(nta, region = "NTACode")
 # find overlap of points and polygon
