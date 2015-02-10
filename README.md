@@ -1,9 +1,14 @@
 NYC Playgrounds
 ===
 
-## Description
-
 Analysis of NYC playgrounds data by neighborhood using R.
+
+## List of Files
+
+* `nyc_playgrounds_analysis.R` - script to reproduce the preprocessing, analysis, and plotting in this [blog post](https://ryancquan.com/blog/2015/02/09/nyc-playgrounds/)
+* `/charts/` - chart outputs from the above R script (PNG)
+* `/plots/` - GIS outputs from the above R script (PNG)
+* `/data/` - input data used in the above R script
 
 ## Sources
 
