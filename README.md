@@ -1,11 +1,11 @@
 NYC Playgrounds
 ===
 
-# Description
+## Description
 
 Analysis of NYC playgrounds data by neighborhood using R.
 
-# Sources
+## Sources
 
 **NYC Planning**
 
@@ -19,4 +19,4 @@ Analysis of NYC playgrounds data by neighborhood using R.
 
 **NYC Parks**
 
-* [NYC Playgrounds Data](http://www.nycgovparks.org/bigapps/DPR_Playgrounds_001
+* [NYC Playgrounds Data](http://www.nycgovparks.org/bigapps/DPR_Playgrounds_001)
